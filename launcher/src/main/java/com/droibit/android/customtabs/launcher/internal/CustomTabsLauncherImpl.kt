@@ -14,10 +14,14 @@ internal class CustomTabsLauncherImpl {
         expectCustomTabsPackages: List<String>,
         fallback: CustomTabsFallback?
     ) {
-        val customTabsPackage = CustomTabsClient.getPackageName(context, expectCustomTabsPackages)
+        var customTabsPackage = CustomTabsClient.getPackageName(context, expectCustomTabsPackages, true)
         if (customTabsPackage == null && fallback != null) {
             fallback.openUrl(context, uri, customTabsIntent)
             return
+        }
+        if (customTabsPackage == null) {
+            customTabsPackage =
+                expectCustomTabsPackages.firstOrNull() ?: CustomTabsPackage.CHROME_PACKAGES.first()
         }
         customTabsIntent.intent.setPackage(customTabsPackage)
         customTabsIntent.launchUrl(context, uri)
